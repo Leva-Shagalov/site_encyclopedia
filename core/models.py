@@ -1,5 +1,5 @@
 from django.db import models
-
+from tinymce.models import HTMLField
 
 class ArticleTopic(models.Model):
     name = models.CharField(max_length=255, verbose_name="название")
@@ -37,7 +37,7 @@ class Comments(models.Model):
         verbose_name_plural = "Комментарии"
 
 class ArticleContent(models.Model):
-    content = models.TextField()
+    content = HTMLField()
     # user = models.ForeignKey(Users, verbose_name="создатель статьи", related_name='articleContents', on_delete=0)
     article = models.ForeignKey(Article, verbose_name="К какой статье?", related_name='articlecontents', on_delete=models.CASCADE)
     date = models.DateField(auto_now=True, verbose_name="дата написание содержания статьи")

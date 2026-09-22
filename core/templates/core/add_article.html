@@ -1,6 +1,9 @@
-{% extends 'core/base.html' %} {% block title %}<title>
-  Страница добавление статьи</title
->{% endblock %} {% block js %}
+{% extends 'core/base.html' %}
+{% load static %}
+ {% block title %}<title>Страница добавление статьи</title>
+<script src="{% static 'js/tiny_mce/tiny_mce.js' %}"> </script> 
+<script src="{% url 'tinymce-js' 'NAME' %}"></script> 
+{% endblock %} {% block js %}
 <script src="/static/js/confirmButton.js"></script>
 {% endblock %} {% block header_text %}
 <p>

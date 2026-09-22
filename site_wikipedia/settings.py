@@ -15,6 +15,12 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+TINYMCE_DEFAULT_CONFIG = {
+    'plugins': 'link,preview',
+    'toolbar1': 'undo redo',
+    'toolbar2': 'bold italic | alignleft aligncenter alignright',
+    'height': '700px',
+}
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
@@ -38,7 +44,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'core'
+    'core',
+    'tinymce'
 ]
 
 MIDDLEWARE = [
