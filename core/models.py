@@ -23,7 +23,7 @@ class Article(models.Model):
         verbose_name = "Статья"
         verbose_name_plural = "Статья"
 
-class Comments(models.Model):
+class Comment(models.Model):
     text = models.TextField()
     # user = models.ForeignKey(Users, verbose_name="создатель статьи", related_name='articleContents', on_delete=0)
     article = models.ForeignKey(Article, verbose_name="К какой статье?", related_name='comments', on_delete=models.SET_NULL, null=True)

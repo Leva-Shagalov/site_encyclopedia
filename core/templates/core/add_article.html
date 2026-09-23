@@ -1,9 +1,7 @@
-{% extends 'core/base.html' %}
-{% load static %}
- {% block title %}<title>Страница добавление статьи</title>
-<script src="{% static 'js/tiny_mce/tiny_mce.js' %}"> </script> 
-<script src="{% url 'tinymce-js' 'NAME' %}"></script> 
-{% endblock %} {% block js %}
+{% extends 'core/base.html' %} {% load static %} {% block title %}<title>
+  Страница добавление статьи
+</title>
+{{ article_form.media }} {% endblock %} {% block js %}
 <script src="/static/js/confirmButton.js"></script>
 {% endblock %} {% block header_text %}
 <p>
@@ -13,51 +11,19 @@
 {% endblock %} {% block content %}
 <main class="main-content">
   <section class="content-section">
-    <h1>Это помощь для написани статей:</h1>
-    <h2>
+    <h2>Это помощь для написани статей:</h2>
+    <h3>
       Если вы не создаёте новую статью, то в полях с названием и классификацией
       можете указать что угодно.
-    </h2>
-    <h2>
+    </h3>
+    <h3>
       Если вы выбрали в классификации статьи "Обновление игры", то статья будет
       написана на страницу обновлений игры.
-    </h2>
-    <h2>Картинки добавляются отдельно.</h2>
+    </h3>
     <form method="post">
-      <ul>
-        <li>
-          <label for="article">Выберите к какой статье прикрепить:</label>
-          <select id="article" name="article">
-            <option value="">-- Новая статья --</option>
-            {% for arti in article %}
-            <option value="{{arti.id}}">{{arti.name}}</option>
-            {% endfor %}
-          </select>
-        </li>
-        <li>
-          <label for="name">Введите название статьи:</label>
-          <input type="text" id="name" name="name" required />
-        </li>
-        <li>
-          <label for="class">Выберите классификацию статьи:</label>
-          <select id="class" name="class" required>
-            <option value="">-- НЕ ВЫБРАНО --</option>
-            {% for top in topic %}
-            <option value="{{top.id}}">{{ top.name }}</option>
-            {% endfor %}
-          </select>
-        </li>
-        <li>
-          <label for="content">Введите текст статьи:</label>
-          <textarea
-            id="content"
-            name="cont"
-            rows="30"
-            cols="55"
-            required
-          ></textarea>
-        </li>
-      </ul>
+      <label for="name">Введите название статьи:</label>
+      <input type="text" id="name" name="name" required />
+      {{ article_form }}
       <button id="button-confirm" type="submit">Создать</button>
     </form>
     <hr />
@@ -71,9 +37,9 @@
           <label for="arti-id">К какой статье?</label>
           <select name="arti-id" id="arti-id" required>
             <option value="">--ВЫБРАТЬ СТАТЬЮ--</option>
-            {% for art in article %}
+            <!-- {% for art in article %}
             <option value="{{art.id}}">{{ art.name }}</option>
-            {% endfor %}
+            {% endfor %} -->
           </select>
         </li>
       </ul>
