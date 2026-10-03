@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-
+from django.http import HttpResponse
 from .models import ArticleTopic, Article, ArticleContent, Img
 from .forms import AddArticleForm
 
@@ -11,18 +11,6 @@ from .forms import AddArticleForm
 #     else:
 #         # Загружаем пользователя из базы данных один раз перед запросом
 #         g.user = Users.get_or_none(login=user_login)
-
-
-def max_id_reserch(id_article): # Поиск id для не созданных статей и выдача того же id если статья уже есть
-    if not id_article:
-        article = Article.objects.all()
-        for art in article:
-            id_res = int(art.id) + 1
-        return id_res
-    else:
-        return id_article
-
-
 
 def index(request):
     return render(request, 'core/index.html')
@@ -50,16 +38,11 @@ def community(request):
 
 def page_article(request, article_id):
     article = get_object_or_404(Article, id=article_id)
-    for con in article.articlecontents.all():
-        for img in con.imgs.all():
-            print(img.name)
     if article.topic.id == 1:
         return redirect('/updates')
     
     return render(request, 'core/article.html',
                   {"article":article})
-
-
 
 
 def add_article(request):
@@ -68,37 +51,26 @@ def add_article(request):
 
     
     if request.method == "POST":
-        content = request.POST.get('cont')
-        
-        if not all([content]):
-            return 'Пропущены поля!'
-        
-        name = request.POST.get('name')
-        topic = request.POST.get('topic')
+        article_form = AddArticleForm(request.POST)
 
+        if article_form.is_valid():
+            title = article_form.cleaned_data.get('title')
+            content = article_form.cleaned_data.get('content')
+            topic = article_form.cleaned_data.get('topic')
 
-        article_req = request.POST.get('article') # Значение может быть пустым
+            Article.objects.create(title = title, topic = topic)
+            foreign_key_article = Article.objects.get(title=title)
 
-        id_article = max_id_reserch(article_req)
- 
-        article = Article.get_or_none(id = id_article)
-        if str(article.classification) == '4':
-            return 'Статьи на странице обновлений неизменяемые!'
-        
-        if not article:
-            Article.create(id = id_article, name = name, classification = classification)
-        
-        if g.user:
-            Content_article.create(content = content, user = g.user.id, article = id_article)
-        else:
-            Content_article.create(content = content, user = 0, article = id_article)
+            # if g.user:
+            ArticleContent.objects.create(content = content, article = foreign_key_article)
+            # else:
+                # Content_article.create(content = content, user = 0, article = id_article)
 
-        return redirect('/community')
+            return redirect('/community')
 
     return render(request, 'core/add_article.html',
                   {"article_form":article_form,
                   "topic":topic})
-
 
 
 def edit_article_page(request):

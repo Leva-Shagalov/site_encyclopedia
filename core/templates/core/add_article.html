@@ -21,8 +21,7 @@
       написана на страницу обновлений игры.
     </h3>
     <form method="post">
-      <label for="name">Введите название статьи:</label>
-      <input type="text" id="name" name="name" required />
+      {% csrf_token %}
       {{ article_form }}
       <button id="button-confirm" type="submit">Создать</button>
     </form>

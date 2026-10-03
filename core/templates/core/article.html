@@ -10,12 +10,11 @@
   <section class="content-section">
     <h2>{{article.topic.name}}:{{article.title}}</h2>
     {% for content in article.articlecontents.all %}
-    <p>{{ content.content }}</p>
+    {{ content.content|safe }}
     <!-- <p>Автор: {{ content.user.login }}</p> -->
     <!-- {% for img in content.imgs.all %}
     <img src="{%img.name.url}}" alt="{{img.alt}}" width="300" height="auto" />
     {% endfor %} -->
-    <hr />
     {% endfor %}
   </section>
 </main>
