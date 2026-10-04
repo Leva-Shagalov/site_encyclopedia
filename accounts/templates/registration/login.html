@@ -1,0 +1,17 @@
+{% extends 'core/base.html' %} {% block title %}<title>
+  Авторизация на Unciv</title
+>{% endblock %} {% block header_text %}
+<p>
+  Добро пожаловать на страницу сообщества! Здесь вы можете авторизоваться в свой
+  аккаунт!
+</p>
+{% endblock %} {% block content %}
+<main class="main-content">
+  <section class="content-section">
+    <form method="post">
+      {% csrf_token %} {{ form.as_p }}
+      <button type="submit">Войти</button>
+    </form>
+  </section>
+</main>
+{% endblock %}

@@ -16,7 +16,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 TINYMCE_DEFAULT_CONFIG = {
-    'plugins': 'link,preview,',
+    'plugins': 'link,preview',
     'toolbar1': 'undo redo',
     'toolbar2': 'bold italic | alignleft aligncenter alignright',
     'height': '700px',
@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'core',
-    'tinymce'
+    'tinymce',
+    'accounts'
 ]
 
 MIDDLEWARE = [

@@ -103,24 +103,34 @@
                 </button></a
               >
             </li>
-            {% if not g.user %}
+            {% if not request.user.username %}
             <li>
-              <a href="/registration" rel="noopener noreferrer"
-                ><button>На страницу регистрации(не работает)</button></a
+              <a href="{% url 'registration' %}" rel="noopener noreferrer"
+                ><button>На страницу регистрации</button></a
               >
             </li>
             <li>
-              <a href="/authorization" rel="noopener noreferrer"
-                ><button>На страницу авторизации(не работает)</button></a
+              <a href="{% url 'login' %}" rel="noopener noreferrer"
+                ><button>На страницу авторизации</button></a
               >
             </li>
-            {% else %}
+            {% else %} {% if request.user.is_superuser %}
             <li>
-              <a href="/logout" rel="noopener noreferrer"
-                ><button>Выйти из профиля</button></a
+              <a href="/admin" target="_blank" rel="noopener noreferrer"
+                ><button>
+                  Перейти к административной панели(Здесь можно выйти аккаунта)
+                </button></a
               >
             </li>
-            <li><p>Вы авторизованы под логином: {{ g.user.login }}</p></li>
+            {% endif %}
+            <li>
+              <a href="{% url 'logout' %}" rel="noopener noreferrer"
+                ><button>Выйти из профиля(Не работает ಥ_ಥ)</button></a
+              >
+            </li>
+            <li>
+              <p>Вы авторизованы под логином: {{ request.user.username }}</p>
+            </li>
             {% endif %}
           </ul>
         </div>

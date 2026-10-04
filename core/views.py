@@ -40,9 +40,13 @@ def page_article(request, article_id):
     article = get_object_or_404(Article, id=article_id)
     if article.topic.id == 1:
         return redirect('/updates')
+    content = ArticleContent.objects.filter(article=article).order_by('-date', '-id')
     
     return render(request, 'core/article.html',
-                  {"article":article})
+                  {"article":article,
+                  "content":content[0],
+                  "history":content[1:],
+                   })
 
 
 def add_article(request):

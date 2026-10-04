@@ -9,13 +9,17 @@
 <main class="main-content">
   <section class="content-section">
     <h2>{{article.topic.name}}:{{article.title}}</h2>
-    {% for content in article.articlecontents.all %}
-    {{ content.content|safe }}
+    {{ content|safe }}
+    <br />
+    <h3>
+      Прошлые версии(Заготовка к созданию просмотра истории изменения статьи):
+    </h3>
+    {% for hist in history %} {{ hist|safe }} <br />
+    {% endfor %}
     <!-- <p>Автор: {{ content.user.login }}</p> -->
     <!-- {% for img in content.imgs.all %}
     <img src="{%img.name.url}}" alt="{{img.alt}}" width="300" height="auto" />
     {% endfor %} -->
-    {% endfor %}
   </section>
 </main>
 {% endblock %}
