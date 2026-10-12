@@ -2,14 +2,23 @@
   регистрация на Unciv</title
 >{% endblock %} {% block header_text %}
 <p>
-  Добро пожаловать на страницу сообщества! Здесь вы можете зарегистрировать свой
-  аккаунт!
+  Добро пожаловать на страницу регистрации! Здесь вы можете зарегистрировать
+  свой аккаунт!
 </p>
 {% endblock %} {% block content %}
 <main class="main-content">
   <section class="content-section">
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
+      <h2>Обязательные поля:</h2>
       {% csrf_token %} {{ form.as_p }}
+      <h2>Поля по желанию:</h2>
+      <label for="avatar">Аватар:</label>
+      <input
+        type="file"
+        id="avatar"
+        name="avatar"
+        placeholder="Ваш аватар(необязательно)"
+      />
       <button type="submit">Зарегистрироваться</button>
     </form>
   </section>

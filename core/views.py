@@ -40,7 +40,7 @@ def page_article(request, article_id):
     article = get_object_or_404(Article, id=article_id)
     if article.topic.id == 1:
         return redirect('/updates')
-    content = ArticleContent.objects.filter(article=article).order_by('-date', '-id')
+    content = ArticleContent.objects.filter(article=article).order_by('-version')
     
     return render(request, 'core/article.html',
                   {"article":article,
@@ -64,11 +64,16 @@ def add_article(request):
 
             Article.objects.create(title = title, topic = topic)
             foreign_key_article = Article.objects.get(title=title)
+            
+            article_content = ArticleContent.objects.create(content = content, article = foreign_key_article)
 
-            # if g.user:
-            ArticleContent.objects.create(content = content, article = foreign_key_article)
-            # else:
-                # Content_article.create(content = content, user = 0, article = id_article)
+            if request.user.is_authenticated:
+                article_content.author = request.user.profile
+                article_content.save()
+
+            article_content_version = ArticleContent.objects.filter(article=foreign_key_article).order_by('-version')[0]
+            article_content.version = article_content_version + 1
+            article_content.save()
 
             return redirect('/community')
 
@@ -198,9 +203,3 @@ def edit_article_page(request):
 
 #     return render('authorization.html')
 
-# # Выход из профиля
-# def logout(request):
-#     session['is_auth'] = False
-#     session['login'] = ''
-
-#     return redirect('/')

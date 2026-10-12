@@ -1,14 +1,50 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Личный кабинет</title>
-  </head>
-  <body>
-    <h1>Личный кабинет: {{ request.user.username }}</h1>
+{% extends 'core/base.html' %} {% block title %}<title>
+  регистрация на Unciv</title
+>{% endblock %} {% block header_text %}
+<p>
+  Добро пожаловать на страницу вашего профиля! Здесь вы можете настроить и
+  посмотреть данные своего аккаунта
+</p>
+{% endblock %} {% block content %}
+<main class="main-content">
+  <section class="content-section">
+    <h2>Вы авторизованны под аккаунтом: {{ request.user.username }}</h2>
+    <button id="avatar-button">Показать/скрыть аватарку</button>
+    <div
+      id="avatar"
+      class="{% if request.user.profile.avatar %}hidden{% endif %}"
+    >
+      <p>
+        Ваша текущая аватарка: {% load static %}
+        <img
+          src="{% if request.user.profile.avatar %} {{request.user.profile.avatar.url}} {% else %}{% static 'img/happiness.png' %}{% endif %}"
+          alt="Тут должна была быть ваша аватарка"
+          width="100"
+          height="auto"
+        />
+      </p>
+      <hr />
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="avatar"><h3>Можете изменить свою аватарку:</h3></label>
+        <input type="file" id="avatar" name="avatar" placeholder="Ваш аватар" />
+        <button type="submit">Изменить</button>
+      </form>
+      <hr />
+    </div>
+    <form method="post" action="{% url 'logout' %}">
+      {% csrf_token %}
+      <button type="submit">Выйти из аккаунта</button>
+    </form>
+  </section>
+</main>
+{% endblock %} {% block js %}
+<script>
+  const avatarDivElement = document.getElementById("avatar");
+  const avatarButtonElement = document.getElementById("avatar-button");
 
-    <a href="{% url 'logout' %}"></a>
-  </body>
-  <!-- </html> -->
-</html>
+  avatarButtonElement.addEventListener("click", () => {
+    avatarDivElement.classList.toggle("hidden");
+  });
+</script>
+{% endblock %}

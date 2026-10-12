@@ -1,4 +1,5 @@
 from django.db import models
+from accounts.models import Profile
 from tinymce.models import HTMLField
 
 class ArticleTopic(models.Model):
@@ -37,10 +38,20 @@ class Comment(models.Model):
         verbose_name_plural = "Комментарии"
 
 class ArticleContent(models.Model):
+
+    class StatusArticle(models.TextChoices):
+        ANONYMOUS = 'AN', 'Статья написана анонимный пользователем'
+        AUTHOR_USER = 'AU', 'Статья написана зарегистрированным пользователем'
+        CREATE_ADMIN = 'AD', 'Статья написана сотрудником сайта(администратором)'
+        CHECKED = 'CH', 'Статья проверена администараторами'
+        MAIN = 'MA', 'Одна из основных страниц сайта'
+
     content = HTMLField()
-    # user = models.ForeignKey(Users, verbose_name="создатель статьи", related_name='articleContents', on_delete=0)
+    author = models.ForeignKey(Profile, verbose_name="создатель статьи", related_name='articlecontents', on_delete=models.SET_NULL, null=True)
     article = models.ForeignKey(Article, verbose_name="К какой статье?", related_name='articlecontents', on_delete=models.CASCADE)
     date = models.DateField(auto_now=True, verbose_name="дата написание содержания статьи")
+    version = models.SmallIntegerField(default=1, verbose_name="версия статьи")
+    status = models.CharField(choices=StatusArticle.choices, default=StatusArticle.ANONYMOUS)
 
     def __str__(self):
                 return self.content

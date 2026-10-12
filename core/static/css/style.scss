@@ -267,6 +267,10 @@ hr {
   }
 }
 
+.hidden {
+  display: none;
+}
+
 /* Сайдбар (боковая панель)*/
 .site-sidebar {
   grid-area: sidebar;

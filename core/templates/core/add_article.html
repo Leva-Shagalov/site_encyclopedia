@@ -12,17 +12,10 @@
 <main class="main-content">
   <section class="content-section">
     <h2>Это помощь для написани статей:</h2>
-    <h3>
-      Если вы не создаёте новую статью, то в полях с названием и классификацией
-      можете указать что угодно.
-    </h3>
-    <h3>
-      Если вы выбрали в классификации статьи "Обновление игры", то статья будет
-      написана на страницу обновлений игры.
-    </h3>
+    <h3>Пока пусто</h3>
+    <hr />
     <form method="post">
-      {% csrf_token %}
-      {{ article_form }}
+      {% csrf_token %} {{ article_form }}
       <button id="button-confirm" type="submit">Создать</button>
     </form>
     <hr />

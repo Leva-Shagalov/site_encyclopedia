@@ -20,14 +20,3 @@ class AddArticleForm(forms.Form):
                 
         return title
 
-    # def __init__(self, *args, **kwargs):
-    #     super().__init__(*args, **kwargs)
-
-    #     article = ArticleTopic.objects.exclude(id=1)
-
-    #     choices = [('dhdh', 'Новая статья'), ]
-    #     for art in article:
-    #         choices.append((art.id, art.name))
-
-    #     self.fields['article'].queryset = article
-    #     self.fields['article'].empty_label = ''

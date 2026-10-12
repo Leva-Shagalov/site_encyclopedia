@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="description" content="Unciv" />
     <meta name="keywords" content="Цивилизация,Стратегия,Пошаговая стратегия" />
-    <meta name="author" content="Лев Шагалов Константинович" />
+    <meta name="author" content="Шагалов Лев Константинович" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     {% block title %}{% endblock %}
     <link rel="stylesheet" href="/static/css/style.css" />
@@ -114,22 +114,18 @@
                 ><button>На страницу авторизации</button></a
               >
             </li>
-            {% else %} {% if request.user.is_superuser %}
+            {% else %} {% if request.user.is_staff %}
             <li>
               <a href="/admin" target="_blank" rel="noopener noreferrer"
-                ><button>
-                  Перейти к административной панели(Здесь можно выйти аккаунта)
-                </button></a
+                ><button>Перейти к административной панели</button></a
               >
             </li>
             {% endif %}
             <li>
-              <a href="{% url 'logout' %}" rel="noopener noreferrer"
-                ><button>Выйти из профиля(Не работает ಥ_ಥ)</button></a
-              >
-            </li>
-            <li>
-              <p>Вы авторизованы под логином: {{ request.user.username }}</p>
+              <p>
+                Вы авторизованы под логином:
+                <a href="{% url 'profile' %}">{{request.user.username }}</a>
+              </p>
             </li>
             {% endif %}
           </ul>
