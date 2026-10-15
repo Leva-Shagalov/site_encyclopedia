@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from .models import ArticleTopic, Article, ArticleContent, Img
-from .forms import AddArticleForm
+from .forms import AddArticleForm, AddArticleContentForm, EditArticleForm
 
 # def load_logged_in_user():
 #     user_login = session.get('login')
@@ -17,7 +17,7 @@ def index(request):
 
 
 def game_updates_page(request):
-    article_updates = Article.objects.filter(topic=1).order_by('id')
+    article_updates = Article.objects.filter(topic=1).exclude(status="NC").order_by('-version')
     return render(request, 'core/updates_game.html',
                   {"article":article_updates})
 
@@ -27,9 +27,12 @@ def community(request):
     articles = Article.objects.exclude(topic=1)
     
     topic = request.GET.get('topic')
+    text = request.GET.get('text')
+    
     if topic:
-        if topic != '1':
-            articles = Article.objects.filter(topic=topic)
+        articles = articles.filter(topic=topic)
+    if text:
+        articles = articles.filter(title__icontains=text.lower())
 
     return render(request, 'core/community.html',
                   {"articles":articles,
@@ -40,20 +43,21 @@ def page_article(request, article_id):
     article = get_object_or_404(Article, id=article_id)
     if article.topic.id == 1:
         return redirect('/updates')
-    content = ArticleContent.objects.filter(article=article).order_by('-version')
-    
-    return render(request, 'core/article.html',
-                  {"article":article,
-                  "content":content[0],
-                  "history":content[1:],
-                   })
+    content = ArticleContent.objects.filter(article=article).exclude(status="NC").order_by('-version')
+
+    try:
+        return render(request, 'core/article.html',
+                            {"article":article,
+                            "content":content[0],
+                            "history":content[1:],
+                             })
+    except IndexError:
+        return HttpResponse("Извините, но у этой статьи нет провереного контента для просмотра.")
 
 
 def add_article(request):
     article_form = AddArticleForm()
-    topic = ArticleTopic.objects.exclude(id=1)
 
-    
     if request.method == "POST":
         article_form = AddArticleForm(request.POST)
 
@@ -69,6 +73,10 @@ def add_article(request):
 
             if request.user.is_authenticated:
                 article_content.author = request.user.profile
+                if request.user.is_staff:
+                    article_content.status = ArticleContent.StatusArticle.CREATE_ADMIN
+                else:
+                    article_content.status = ArticleContent.StatusArticle.AUTHOR_USER
                 article_content.save()
 
             article_content_version = ArticleContent.objects.filter(article=foreign_key_article).order_by('-version')[0]
@@ -78,128 +86,87 @@ def add_article(request):
             return redirect('/community')
 
     return render(request, 'core/add_article.html',
-                  {"article_form":article_form,
-                  "topic":topic})
+                  {"article_form":article_form})
+
+def add_article_content(request, article_id):
+    article_form = AddArticleContentForm()
+    
+    if request.method == "POST":
+        article_form = AddArticleContentForm(request.POST)
+
+        if article_form.is_valid():
+            content = article_form.cleaned_data.get('content')
+
+            foreign_key_article = Article.objects.get(id=article_id)
+            
+            article_content = ArticleContent.objects.create(content = content, article = foreign_key_article)
+
+            if request.user.is_authenticated:
+                article_content.author = request.user.profile
+                article_content.save()
+
+            article_content_version = ArticleContent.objects.filter(article=foreign_key_article).order_by('-version')[0]
+            article_content.version = article_content_version.version + 1
+            article_content.save()
+
+            return redirect(f'/article/{article_id}')
+
+    return render(request, 'core/add_article.html',
+                            {"article_form":article_form})
 
 
-def edit_article_page(request):
-    articles = Article.objects.exclude(topic=1).order_by('id')
-    topic = ArticleTopic.objects.exclude(id=1)
 
-    res = [{
-        "arti": article.title,
-        "cont": [
-            content 
-            for content in ArticleContent.objects.filter(article=article.id).values().order_by('id')
-        ]
-        }
-        for article in articles
-    ]
-    print(res)
+def reserch_article_not_checked(request, article_id):
+    if article_id == 0:
+        article_content = ArticleContent.objects.filter(status="NC")
+        articles = []
 
-#     if request.form:
-#         form_name = request.form.get("form")
-#         if str(form_name) == "article":
-        
-#             arti_id = request.form.get("arti-id")
-#             new_name = request.form.get("name")
-#             classification = request.form.get("class")
+        for article in article_content:
+            if article.article not in articles:
+                articles.append(article.article)
 
-#             print(new_name)
+        return render(request, 'core/reserch_article_not_checked.html',
+                                {"articles": articles,
+                                 "flag": False})
 
-#             if not all([new_name, arti_id]):
-#                 return 'Пропущены поля!'
+    else:
+        article_content = ArticleContent.objects.filter(article=article_id, status="NC")
+        article = Article.objects.get(id=article_id)
 
-#             arti = Article.get_or_none(id = arti_id)
-#             if not arti:
-#                 return "Вы обратились к НЕСУЩЕСТВУЮЩЕЙ статье!"
+        return render(request, 'core/reserch_article_not_checked.html',
+                                {"articles": article_content,
+                                 "article": article,
+                                 "flag": True})
 
-#             arti.name = new_name
+def edit_article(request, content_id):
+    article_edit_form = EditArticleForm()
 
-#             if classification:
-#                 arti.classification = classification
-
-#             arti.save()
-
-#             return redirect('/community')
-        
-#         elif str(form_name) == "content":
-#             return redirect('/community')
-        
-#         else:
-#             return "Данные отправленны не коррекстно!"
-    # import json
-    # base=json.dumps(res, ensure_ascii=False)
-    # print(base)
+    # if request.method == "POST":
+            # article_edit_form = EditArticleForm(request.POST)
+    
+            # if article_edit_form.is_valid():
+            #     title = article_edit_form.cleaned_data.get('title')
+            #     content = article_edit_form.cleaned_data.get('content')
+            #     topic = article_edit_form.cleaned_data.get('topic')
+    
+            #     if request.user.is_authenticated:
+            #         article_content.author = request.user.profile
+            #         if request.user.is_staff:
+            #             article_content.status = ArticleContent.StatusArticle.CREATE_ADMIN
+            #         else:
+            #             article_content.status = ArticleContent.StatusArticle.AUTHOR_USER
+            #         article_content.save()
+    
+            #     article_content_version = ArticleContent.objects.filter(article=foreign_key_article).order_by('-version')[0]
+            #     article_content.version = article_content_version + 1
+            #     article_content.save()
+    
+            #     return redirect(f'/community/{article_id}')
+    
+    content = ArticleContent.objects.get(id=content_id)
+    article = content.article
+   
     return render(request, 'core/edit_article.html',
-                  {"article":articles,
-                  "topic":topic,
-                  "base":None})
-
-
-
-# def get_data(request):
-#     articles = Article.select().where(Article.classification != 4).order_by(Article.id).dicts()
-#     clas = Class_article.select().where(Class_article.id != 4)
-
-#     res = [{
-#         "arti": arti["name"],
-#         "cont":[
-#             cont for cont in Content_article.select(
-#             ).filter(Content_article.article_id==arti["id"]).order_by(Content_article.id).dicts()
-#         ]
-#         }
-#         for arti in articles
-#     ]
-#     from flask import jsonify
-#     return jsonify(res)
-
-
-
-# def registration(request):
-    
-#     if request.method == 'POST':
-#         login = request.form.get('login')
-#         password = request.form.get('password-1')
-#         confirm_password = request.form.get('password-2')
-
-#         if not all([login, password, confirm_password]):
-#             return 'Пропущены поля!'
-        
-#         if password != confirm_password:
-#             return 'Пароли не совпадают!'
-        
-#         if Users.get_or_none(login = login):
-#             return 'Такой логин уже есть!'
-        
-#         Users.create(login = login, password = password)
-#         session['is_auth'] = True
-#         session['login'] = login
-
-#         return redirect('/')
-
-#     return render('registration.html')
-
-
-# def authorization(request):
-    
-#     if request.method == 'POST':
-#         login = request.form.get('login')
-#         if login == 'Аноним':
-#             return 'Невозможно авторизоваться с таким именем'
-#         password = request.form.get('password')
-
-#         if not all([login, password]):
-#             return 'Пропущены поля!'
-        
-        
-#         if Users.get_or_none(login = login, password = password):
-#             session['is_auth'] = True
-#             session['login'] = login
-#         else:
-#             return 'Такого пользователя не существует!'
-        
-#         return redirect('/')
-
-#     return render('authorization.html')
-
+                  {"edit_form":article_edit_form,
+                   "article": article,
+                   "content": content})

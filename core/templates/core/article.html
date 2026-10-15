@@ -8,18 +8,23 @@
 {% endblock %} {% block content %}
 <main class="main-content">
   <section class="content-section">
-    <h2>{{article.topic.name}}:{{article.title}}</h2>
+    <h2>
+      {{article.topic.name}}:{{article.title}}<a
+        href="{% url 'add_article_content' article.id %}"
+        rel="noopener noreferrer"
+        >҂</a
+      >
+    </h2>
     {{ content|safe }}
+    <br />
+    <p>Автор: {{ content.author }}</p>
+    <p>Статус: {{ content.get_status_display }}</p>
     <br />
     <h3>
       Прошлые версии(Заготовка к созданию просмотра истории изменения статьи):
     </h3>
     {% for hist in history %} {{ hist|safe }} <br />
     {% endfor %}
-    <!-- <p>Автор: {{ content.user.login }}</p> -->
-    <!-- {% for img in content.imgs.all %}
-    <img src="{%img.name.url}}" alt="{{img.alt}}" width="300" height="auto" />
-    {% endfor %} -->
   </section>
 </main>
 {% endblock %}

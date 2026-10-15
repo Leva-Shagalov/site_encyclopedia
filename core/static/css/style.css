@@ -171,6 +171,7 @@ hr {
   padding-bottom: 10px;
 }
 .content-section h2 a {
+  margin: 12px;
   color: #e8e8e8;
 }
 .content-section h2 a:hover {

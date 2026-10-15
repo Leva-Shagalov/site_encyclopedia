@@ -40,18 +40,15 @@ class Comment(models.Model):
 class ArticleContent(models.Model):
 
     class StatusArticle(models.TextChoices):
-        ANONYMOUS = 'AN', 'Статья написана анонимный пользователем'
-        AUTHOR_USER = 'AU', 'Статья написана зарегистрированным пользователем'
-        CREATE_ADMIN = 'AD', 'Статья написана сотрудником сайта(администратором)'
-        CHECKED = 'CH', 'Статья проверена администараторами'
-        MAIN = 'MA', 'Одна из основных страниц сайта'
+        NOT_CHEKED = 'NC', 'Статья не проверена'
+        CHECKED = 'CH', 'Статья проверена администаратором'
 
     content = HTMLField()
     author = models.ForeignKey(Profile, verbose_name="создатель статьи", related_name='articlecontents', on_delete=models.SET_NULL, null=True)
     article = models.ForeignKey(Article, verbose_name="К какой статье?", related_name='articlecontents', on_delete=models.CASCADE)
     date = models.DateField(auto_now=True, verbose_name="дата написание содержания статьи")
     version = models.SmallIntegerField(default=1, verbose_name="версия статьи")
-    status = models.CharField(choices=StatusArticle.choices, default=StatusArticle.ANONYMOUS)
+    status = models.CharField(choices=StatusArticle.choices, default=StatusArticle.NOT_CHEKED)
 
     def __str__(self):
                 return self.content

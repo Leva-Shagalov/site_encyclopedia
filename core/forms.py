@@ -1,7 +1,7 @@
 from django import forms
 from django.core.exceptions import ValidationError
 from tinymce.widgets import TinyMCE
-from .models import ArticleTopic, Article
+from .models import ArticleTopic, Article, ArticleContent
 
 class AddArticleForm(forms.Form):
     title = forms.CharField(max_length=255, label="Введите название статьи")
@@ -20,3 +20,26 @@ class AddArticleForm(forms.Form):
                 
         return title
 
+class AddArticleContentForm(forms.Form):
+    content = forms.CharField(label="Содержание вашей статьи", widget=TinyMCE(attrs={'cols': 80, 'rows': 30}))
+
+    class Meta:
+        widgets = {'content': TinyMCE(attrs={'cols': 80, 'rows': 30})}
+
+class EditArticleForm(forms.Form):
+    title = forms.CharField(max_length=255, label="Введите название статьи")
+    content = forms.CharField(label="Содержание вашей статьи", widget=TinyMCE(attrs={'cols': 80, 'rows': 30}))
+    topic = forms.ModelChoiceField(label="Какая тема статьи", queryset=ArticleTopic.objects.exclude(id=1))
+    status = forms.MultipleChoiceField(label='Статус статьи', choices=ArticleContent.StatusArticle.choices)
+    
+    class Meta:
+        widgets = {'content': TinyMCE(attrs={'cols': 80, 'rows': 30})}
+    
+    def clean_title(self):
+            title = self.cleaned_data.get("title")
+    
+            same_articles = Article.objects.filter(title=title).exists()
+            if same_articles:
+                raise ValidationError('Используйте другое название статьи. Нельзя иметь две статьи с одинаковыми названиями')
+                    
+            return title

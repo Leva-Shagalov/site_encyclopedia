@@ -1,129 +1,25 @@
 {% extends 'core/base.html' %} {% block title %}<title>
-  Страница редактирования статьи</title
->{% endblock %} {% block header_text %}
+  Страница редактирования статьи
+</title>
+{{ edit_form.media }} {% endblock %} {% block header_text %}
 <p>
-  Добро пожаловать на страницу сообщества! Здесь вы можете редактировать свои
-  статьи!
+  Добро пожаловать на страницу сообщества! Здесь вы можете проверять и
+  редактировать статьи!
 </p>
 {% endblock %} {% block content %}
 <main class="main-content">
   <section class="content-section">
-    <h1>Это помощь для редактирования статей:</h1>
+    <h1>Помощь и правила для редактирования статей:</h1>
     <h2>
-      Для изменения содержаний статей сначала уточните у какой статьи меняеться
-      содержание.
+      Во время проверки статьи допускаются небольшие изменения
+      содержания(поправить некоторые напутаные буквы местами или неправильно
+      поставленную запятую).
     </h2>
-    <h2>Изменинея название и классификации статьи проводиться отдельною</h2>
-    <form method="post" id="form">
-      <ul id="div">
-        <li>
-          <label for="article"
-            >Выберите у какой статьи менять содержание:</label
-          >
-          <select id="article" name="article">
-            <option value="">-- ВЫБРАТЬ СТАТЬЮ--</option>
-          </select>
-        </li>
-      </ul>
-    </form>
-
-    <hr />
-
-    <h3>Редактировать название статьи</h3>
-    <form method="POST">
-      <ul>
-        <li>
-          <label for="arti-id">У какой статьи?</label>
-          <select name="arti-id" id="arti-id" required>
-            <option value="">--ВЫБРАТЬ СТАТЬЮ--</option>
-            {% for art in article %}
-            <option value="{{art.id}}">{{ art.title }}</option>
-            {% endfor %}
-          </select>
-        </li>
-        <li>
-          <label for="name">Новое название статьи:</label>
-          <input type="text" name="name" id="name" required />
-        </li>
-        <li>
-          <label for="class">Новая классификацию статьи(необязательно):</label>
-          <select id="class" name="class">
-            <option value="">-- НЕ ИЗМЕНЯТЬ --</option>
-            {% for top in topic %}
-            <option value="{{top.id}}">{{ top.name }}</option>
-            {% endfor %}
-          </select>
-        </li>
-      </ul>
-      <input type="hidden" name="form" value="article" />
-      <button type="submit">Изменить статью</button>
-    </form>
+    <h2>
+      Если хотите сильно изменить содержание можете написать свою статью вместо
+      писания под чужим именем.(так как автор при редактирование не меняется)
+    </h2>
+    <form method="post" id="form">{% csrf_token %} {{ edit_form }}</form>
   </section>
 </main>
-<!-- <script>
-  fetch("/get_data")
-    .then((response) => {
-      // Проверяем, что сервер ответил успешно
-      if (!response.ok) {
-        throw new Error(`Ошибка HTTP: ${response.status}`);
-      }
-      // Автоматически декодируем JSON (включая все \r\n и кавычки)
-      return response.json();
-    })
-    .then((userData) => {
-      // Здесь данные уже полностью готовы к работе
-      console.log("Данные успешно получены:", userData);
-
-      userData.forEach((article) => {
-        let articleHtml = `
-                <option value="${article.arti}" onclick="show_content(${article.cont}, '${article.arti}')">${article.arti}</option>
-            `;
-        selectArticle.insertAdjacentHTML("beforeend", articleHtml);
-      });
-
-      function show_content(cont, name) {
-        console.log("hello", cont);
-        let contHtml = `
-            <li>
-            <p>Выбрана статья: ${name}</p>
-
-            <label for="cont">Выберите содержание которое желаете изменить:</label>
-            <select id="cont" name="cont">
-            `;
-        cont.forEach((content) => {
-          contHtml += `
-                <option value="${content.id}" onclick="show_edit(${content.content})">${content.content}</option>
-                `;
-        });
-
-        contHtml += `</select></li>`;
-
-        div_ul.innerHTML = contHtml;
-      }
-    });
-
-  const div_ul = document.getElementById("div");
-  const selectArticle = document.getElementById("article");
-
-  function show_edit(text) {
-    div_ul.innerHTML = `
-         <li>
-            <label for="cont">Введите новый текст статьи:</label>
-            <textarea id="cont" name="cont" rows="30" cols="55" required>${text}</textarea>
-
-            <button type="submit" id="button-confirm" onclick="buttonConfirm()">Изменить</button>
-         </li>
-         `;
-  }
-
-  function buttonConfirm() {
-    buttonConfirm.addEventListener("click", function (e) {
-      const answer = confirm("Подвердите своё действие!");
-
-      if (!answer) {
-        e.preventDefault();
-      }
-    });
-  }
-</script> -->
 {% endblock %}

@@ -87,20 +87,7 @@
                 href="{% url 'add_article' %}"
                 target="_blank"
                 rel="noopener noreferrer"
-                ><button>
-                  Добавить свою статью(находится в разработке)
-                </button></a
-              >
-            </li>
-            <li>
-              <a
-                href="{% url 'edit_article' %}"
-                target="_blank"
-                rel="noopener noreferrer"
-                ><button>
-                  Редактировать статью(не работает, возможен пересмотр задач для
-                  неё)
-                </button></a
+                ><button>Добавить свою статью</button></a
               >
             </li>
             {% if not request.user.username %}
@@ -115,6 +102,17 @@
               >
             </li>
             {% else %} {% if request.user.is_staff %}
+            <li>
+              <a
+                href="{% url 'reserch_article_not_checked' article_id=0 %}"
+                target="_blank"
+                rel="noopener noreferrer"
+                ><button>
+                  Редактировать статью(не работает, возможен пересмотр задач для
+                  неё)
+                </button></a
+              >
+            </li>
             <li>
               <a href="/admin" target="_blank" rel="noopener noreferrer"
                 ><button>Перейти к административной панели</button></a
