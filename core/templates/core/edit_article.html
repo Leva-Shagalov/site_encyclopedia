@@ -1,7 +1,9 @@
 {% extends 'core/base.html' %} {% block title %}<title>
   Страница редактирования статьи
 </title>
-{{ edit_form.media }} {% endblock %} {% block header_text %}
+{{ edit_form.media }} {% endblock %} {% load static %} {% block js %}
+<script src="{% static 'js/editArticle.js' %}"></script>
+{% endblock %} {% block header_text %}
 <p>
   Добро пожаловать на страницу сообщества! Здесь вы можете проверять и
   редактировать статьи!
@@ -19,7 +21,16 @@
       Если хотите сильно изменить содержание можете написать свою статью вместо
       писания под чужим именем.(так как автор при редактирование не меняется)
     </h2>
-    <form method="post" id="form">{% csrf_token %} {{ edit_form }}</form>
+    <h2>
+      Для удаления нажмите кнопку "Удалить" или очистите все поля, затем
+      "Изменить".
+    </h2>
+    <p id="article-name"></p>
+    <form method="post" id="form">
+      {% csrf_token %} {{ edit_form }}
+      <button type="submit">Изменить</button>
+      <button type="button" id="reset_button">Удалить</button>
+    </form>
   </section>
 </main>
 {% endblock %}

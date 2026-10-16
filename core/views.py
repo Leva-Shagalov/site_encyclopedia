@@ -1,16 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from .models import ArticleTopic, Article, ArticleContent, Img
 from .forms import AddArticleForm, AddArticleContentForm, EditArticleForm
+from django.core.exceptions import ValidationError
 
-# def load_logged_in_user():
-#     user_login = session.get('login')
-
-#     if user_login is None:
-#         g.user = None
-#     else:
-#         # Загружаем пользователя из базы данных один раз перед запросом
-#         g.user = Users.get_or_none(login=user_login)
 
 def index(request):
     return render(request, 'core/index.html')
@@ -139,34 +132,48 @@ def reserch_article_not_checked(request, article_id):
                                  "flag": True})
 
 def edit_article(request, content_id):
+    if not request.user.is_staff:
+        return redirect('/')
     article_edit_form = EditArticleForm()
 
-    # if request.method == "POST":
-            # article_edit_form = EditArticleForm(request.POST)
+    if request.method == "POST":
+            article_edit_form = EditArticleForm(request.POST, content_id=content_id)
     
-            # if article_edit_form.is_valid():
-            #     title = article_edit_form.cleaned_data.get('title')
-            #     content = article_edit_form.cleaned_data.get('content')
-            #     topic = article_edit_form.cleaned_data.get('topic')
+            if article_edit_form.is_valid():
+                title = article_edit_form.cleaned_data.get('title')
+                content = article_edit_form.cleaned_data.get('content')
+                topic = article_edit_form.cleaned_data.get('topic')
+                status = article_edit_form.cleaned_data.get('status')
+
+                print(f"DEBUG: title={repr(title)}, content={repr(content)}, topic={repr(topic)}, status={repr(status)}")
+                print(f"DEBUG: bool(title)={bool(title)}, bool(content)={bool(content)}, bool(topic)={bool(topic)}, bool(status)={bool(status)}")
+
+                if not any([title, content, topic, status]):
+                    ArticleContent.objects.get(id=content_id).delete()
+                elif not all([title, content, topic, status]):
+                    raise ValidationError('Либо должны быть все поля для измения статьи, либо отсутвовать все поля для удаления.')
+                
+                else:
+                    content = ArticleContent.objects.get(id=content_id)
+
+                    content.article.title = title
+                    content.content = f"{content}"
+                    content.article.topic = topic
+                    content.status = ArticleContent.StatusArticle(status[0])
+                    content.save()
     
-            #     if request.user.is_authenticated:
-            #         article_content.author = request.user.profile
-            #         if request.user.is_staff:
-            #             article_content.status = ArticleContent.StatusArticle.CREATE_ADMIN
-            #         else:
-            #             article_content.status = ArticleContent.StatusArticle.AUTHOR_USER
-            #         article_content.save()
-    
-            #     article_content_version = ArticleContent.objects.filter(article=foreign_key_article).order_by('-version')[0]
-            #     article_content.version = article_content_version + 1
-            #     article_content.save()
-    
-            #     return redirect(f'/community/{article_id}')
-    
-    content = ArticleContent.objects.get(id=content_id)
-    article = content.article
+                return redirect('/reserch_article_not_checked/0')
    
     return render(request, 'core/edit_article.html',
-                  {"edit_form":article_edit_form,
-                   "article": article,
-                   "content": content})
+                  {"edit_form":article_edit_form})
+
+
+def get_data_form(request, content_id):
+    content = ArticleContent.objects.get(id=content_id)
+    data = {
+            "title": content.article.title,
+            "content": content.content,
+            "topic": content.article.topic.id,
+            "status": content.status
+        }
+    return JsonResponse(data)
