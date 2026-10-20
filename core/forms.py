@@ -41,9 +41,17 @@ class EditArticleForm(forms.Form):
     
     def clean_title(self):
         title = self.cleaned_data.get("title")
-    
-        same_articles = Article.objects.exclude(id=self.id).filter(title=title).exists()
+        
+        same_articles = Article.objects.filter(title=title)
+        content = ArticleContent.objects.filter(id=int(self.id))
+        if same_articles.exists():
+            if same_articles[0].title == content[0].article.title:
+                same_articles = False
+            else:
+                same_articles = True
+        
         if same_articles:
+            print("Титульная ошибка")
             raise ValidationError('Используйте другое название статьи. Нельзя иметь две статьи с одинаковыми названиями')
                     
         return title

@@ -141,28 +141,32 @@ def edit_article(request, content_id):
     
             if article_edit_form.is_valid():
                 title = article_edit_form.cleaned_data.get('title')
-                content = article_edit_form.cleaned_data.get('content')
+                new_content = article_edit_form.cleaned_data.get('content')
                 topic = article_edit_form.cleaned_data.get('topic')
                 status = article_edit_form.cleaned_data.get('status')
 
-                print(f"DEBUG: title={repr(title)}, content={repr(content)}, topic={repr(topic)}, status={repr(status)}")
-                print(f"DEBUG: bool(title)={bool(title)}, bool(content)={bool(content)}, bool(topic)={bool(topic)}, bool(status)={bool(status)}")
+                print(f"DEBUG: title={repr(title)}, content={repr(new_content)}, topic={repr(topic)}, status={repr(status)}")
+                print(f"DEBUG: bool(title)={bool(title)}, bool(content)={bool(new_content)}, bool(topic)={bool(topic)}, bool(status)={bool(status)}")
 
-                if not any([title, content, topic, status]):
+                if not any([title, new_content, topic, status]):
                     ArticleContent.objects.get(id=content_id).delete()
-                elif not all([title, content, topic, status]):
+                elif not all([title, new_content, topic, status]):
                     raise ValidationError('Либо должны быть все поля для измения статьи, либо отсутвовать все поля для удаления.')
                 
                 else:
                     content = ArticleContent.objects.get(id=content_id)
+                    print(content.article.title, content.article.topic)
 
                     content.article.title = title
-                    content.content = f"{content}"
+                    content.content = new_content
                     content.article.topic = topic
                     content.status = ArticleContent.StatusArticle(status[0])
                     content.save()
+                    content.article.save()
     
                 return redirect('/reserch_article_not_checked/0')
+            else:
+                raise ValidationError("Не валидно:(")
    
     return render(request, 'core/edit_article.html',
                   {"edit_form":article_edit_form})

@@ -146,15 +146,6 @@ hr {
   border-radius: 15px;
   border: 1px solid rgb(52, 107, 131);
 }
-.main-content button {
-  width: auto;
-  padding: 15px;
-  margin: 20px;
-  border-radius: 50%;
-  color: #e8e8e8;
-  background-color: rgb(52, 107, 131);
-  border: 1px solid rgba(0, 0, 110, 0.5);
-}
 
 .content-section {
   margin-bottom: 40px;
@@ -210,6 +201,10 @@ hr {
   color: #e8e8e8;
   background-color: rgb(52, 107, 131);
   border: 1px solid rgba(0, 0, 110, 0.5);
+}
+
+.red_button {
+  background-color: darkred !important;
 }
 
 .image-placeholder {

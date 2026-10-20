@@ -26,7 +26,7 @@
       "Изменить".
     </h2>
     <p id="article-name"></p>
-    <form method="post" id="form">
+    <form method="POST" id="form">
       {% csrf_token %} {{ edit_form }}
       <button type="submit">Изменить</button>
       <button type="button" id="reset_button">Удалить</button>

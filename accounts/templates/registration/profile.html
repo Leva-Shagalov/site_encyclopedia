@@ -6,6 +6,7 @@
 </p>
 {% endblock %} {% block js %} {% load static %}
 <script src="{% static 'js/hiddenAvatar.js' %}"></script>
+<script src="{% static 'js/confirmDelete.js' %}"></script>
 {% endblock %} {% block content %}
 <main class="main-content">
   <section class="content-section">
@@ -41,6 +42,11 @@
     <form method="post" action="{% url 'logout' %}">
       {% csrf_token %}
       <button type="submit">Выйти из аккаунта</button>
+    </form>
+    <form method="post" action="{% url 'delete_account' %}">
+      {% csrf_token %}
+      <input type="hidden" name="user_id" value="{{request.user.profile.id}}" />
+      <button class="red_button" id="button-confirm" type="submit">Удалить аккаунт</button>
     </form>
   </section>
 </main>

@@ -147,9 +147,6 @@ hr {
   padding: 30px;
   border-radius: 15px;
   border: p.$img_small_border;
-  button {
-    @include button_style();
-  }
 }
 
 .content-section {
@@ -202,6 +199,10 @@ hr {
   button {
     @include button_style();
   }
+}
+
+.red_button{
+  background-color: darkred!important;
 }
 
 .image-placeholder {
