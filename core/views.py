@@ -10,7 +10,7 @@ def index(request):
 
 
 def game_updates_page(request):
-    article_updates = Article.objects.filter(topic=1).exclude(status="NC").order_by('-version')
+    article_updates = Article.objects.filter(topic=1)
     return render(request, 'core/updates_game.html',
                   {"article":article_updates})
 
