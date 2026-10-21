@@ -67,9 +67,8 @@ def add_article(request):
             if request.user.is_authenticated:
                 article_content.author = request.user.profile
                 if request.user.is_staff:
-                    article_content.status = ArticleContent.StatusArticle.CREATE_ADMIN
-                else:
-                    article_content.status = ArticleContent.StatusArticle.AUTHOR_USER
+                    article_content.status = ArticleContent.StatusArticle.CHECKED
+
                 article_content.save()
 
             article_content_version = ArticleContent.objects.filter(article=foreign_key_article).order_by('-version')[0]
